@@ -39,6 +39,7 @@ SELECT FIRST_NAME
        ,COMMISSION_PCT
        ,NVL2(COMMISSION_PCT, SALARY+SALARY*COMMISSION_PCT,SALARY) 
        FROM EMPLOYEES;
+       
 --DECODE(값, 비교값, 결과값, ......,ELSE문)
 SELECT DECODE('C','A','A입니다','B','B입니다','C','C입니다','나머지입니다')FROM DUAL;
 SELECT DECODE(JOB_ID, 'IT_PROG' ,SALARY*1.1, 
@@ -46,7 +47,8 @@ SELECT DECODE(JOB_ID, 'IT_PROG' ,SALARY*1.1,
                         'AD_VP',SALARY*1.3,
                         SALARY) 
 FROM EMPLOYEES;
---CASE ~WHEN ~THEN ~ELSE~END
+
+--CASE ~WHEN ~THEN ~ELSE ~END
 SELECT FIRST_NAME
         ,JOB_ID
         ,SALARY
