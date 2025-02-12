@@ -21,7 +21,7 @@ FROM EMPLOYEES WHERE JOB_ID = (SELECT JOB_ID FROM EMPLOYEES WHERE EMPLOYEE_ID=10
 SELECT *
 FROM EMPLOYEES
 WHERE SALARY >= (SELECT SALARY FROM EMPLOYEES WHERE FIRST_NAME='David');
---------------------------------------------------------------------
+------------------------------------------------------------------------------
 --다중행 서브쿼리 -여러행이 리턴되는 서브쿼리
 SELECT SALARY FROM EMPLOYEES WHERE FIRST_NAME='David';
 
@@ -160,8 +160,8 @@ ORDER BY COUNTRY_NAME;
 
 SELECT *
 FROM (SELECT * 
-        FROM (SELECT * 
-              FROM EMPLOYEES)
+      FROM (SELECT * 
+            FROM EMPLOYEES)
 );
 -- ROWNUM은 조회된 순서에 대해서 번호가 붙기때문에 ORDER BY를 시키면 순서가 뒤바뀝니다.
 SELECT ROWNUM,
@@ -298,19 +298,21 @@ WHERE RN>=10 AND RN<=20;
 --SA_MAN 사원의 급여 내림차순 기준으로 ROWNUM을 붙여주세요.
 --조건) SA_MAN 사원들의 ROWNUM, 이름, 급여, 부서아이디, 부서명을 출력하세요.
 
-SELECT ROWNUM, SALARY, NAME, D.DEPARTMENT_ID, DEPARTMENT_NAME
+SELECT ROWNUM, NAME ,SALARY, D.DEPARTMENT_ID, DEPARTMENT_NAME
 FROM (
-        SELECT ROWNUM, FIRST_NAME||LAST_NAME AS NAME, SALARY, DEPARTMENT_ID
-            FROM(
-                SELECT * 
-                    FROM EMPLOYEES
-                    WHERE JOB_ID='SA_MAN'
-                    ORDER BY SALARY DESC
-                )            
-        ) X
+        SELECT  ROWNUM, 
+                FIRST_NAME||' '||LAST_NAME AS NAME, 
+                SALARY, 
+                DEPARTMENT_ID
+                FROM(
+                     SELECT * 
+                     FROM EMPLOYEES
+                     WHERE JOB_ID='SA_MAN'
+                     ORDER BY SALARY DESC
+                        )            
+                ) X
 LEFT JOIN DEPARTMENTS D
 ON X.DEPARTMENT_ID=D.DEPARTMENT_ID;
-
 
 --문제15
 --DEPARTMENTS테이블에서 각 부서의 부서명, 매니저아이디, 부서에 속한 인원수 를 출력하세요.
@@ -346,14 +348,12 @@ FROM (
         ON D.LOCATION_ID=A.LOCATION_ID
 ) x
 JOIN (
-        SELECT DEPARTMENT_ID, NVL(AVG(SALARY),0) AS 부서별평균연봉
+        SELECT DEPARTMENT_ID, 
+        NVL(AVG(SALARY),0) AS 부서별평균연봉
         FROM EMPLOYEES
         GROUP BY DEPARTMENT_ID
 ) Y
 ON X.DEPARTMENT_ID=Y.DEPARTMENT_ID;
-
-
-
 
 --
 --문제17

@@ -1,0 +1,48 @@
+--제약조건 - 컬럼에 원치않는 데이터가 입력, 삭제, 수정 되는 것을 방지하기 위한 조건
+--PRIMARY KEY - 테이블의 고유키, 중복X, NULL X, PK는 테이블에 1개
+--UNIQUE -중복X, NULL O
+--NOT NULL -NULL을 허용하지 않음
+--FOREIGN KEY - 참조하는 테이블의 PK를 넣어놓은 컬럼, 중복O , NULL O
+--CHECK - 컬럼에 대한 데이터 제한(WHERE절과 유사)
+
+--제약조건을 확이하는 명령문 OR 마우스로 확인
+SELECT * FROM user_constraints;
+SELECT * FROM DEPTS;
+--1ST (열레벨)
+DROP TABLE DEPTS;
+
+CREATE TABLE DEPTS(
+    DEPT_NO NUMBER(2)         CONSTRAINT DEPTS_DEPT_NO_PK PRIMARY KEY,       
+    DEPT_NAME VARCHAR2(30)    CONSTRAINT DEPTS_DEPT_NAME_NN NOT NULL,
+    DEPT_DATE DATE            DEFAULT SYSDATE, -- 값이 없을 경우 자동으로 현재 날짜 지정 (제약 조건 아님)
+    DEPT_PHONE VARCHAR2(30)   CONSTRAINT DEPTS_DEPT_PHONE_UK UNIQUE,  
+    DEPT_GENDER CHAR(1)       CONSTRAINT DEPTS_DEPT_GENDER_CK CHECK (DEPT_GENDER IN ('F', 'M')), -- 컬럼명 오타 수정
+    LOCA_ID NUMBER(4)         CONSTRAINT DEPTS_LOCA_ID_FK REFERENCES LOCATIONS(LOCATION_ID) -- LOCATIONS 테이블의 LOCATION_ID 참조
+);
+-- (CONSTRAINT는 생략가능)
+DESC DEPTS;
+DROP TABLE  DEPTS;
+CREATE TABLE DEPTS(
+    DEPT_NO NUMBER(2)         PRIMARY KEY,       
+    DEPT_NAME VARCHAR2(30)    NOT NULL,
+    DEPT_DATE DATE            DEFAULT SYSDATE, --값이 들어가지 않을때 자동으로 지정되는 기본값--제약조건은 아님
+    DEPT_PHONE VARCHAR2(30)  UNIQUE, 
+    DEPT_GENDER CHAR(1)      CHECK(DEPT_GENDER IN('F','M')),
+    LOCA_ID NUMBER(4)         REFERENCES LOCATIONS(LOCATION_ID) -- REFERENCES 참조테이블(PK컬럼명)
+);
+
+INSERT INTO DEPTS(DEPT_NO, DEPT_NAME, DEPT_PHONE, DEPT_GENDER, LOCA_ID)
+VALUES(1, NULL, '010....','F',1700); --NOT NULL 제약 위배
+INSERT INTO DEPTS(DEPT_NO, DEPT_NAME, DEPT_PHONE, DEPT_GENDER, LOCA_ID)
+VALUES(1, 'JONG', '010....','X',1700); --CHECK 제약 위배
+INSERT INTO DEPTS(DEPT_NO, DEPT_NAME, DEPT_PHONE, DEPT_GENDER, LOCA_ID)
+VALUES(1, 'JONG', '010....','F',100); -- FK제약 위배
+INSERT INTO DEPTS(DEPT_NO, DEPT_NAME, DEPT_PHONE, DEPT_GENDER, LOCA_ID)
+VALUES(1, 'JONG', '010....','F',1700); -- 1행 삽입
+INSERT INTO DEPTS(DEPT_NO, DEPT_NAME, DEPT_PHONE, DEPT_GENDER, LOCA_ID)
+VALUES(2, 'JONG', '010....','F',1700); -- 유니크 제약 위배
+
+--개체 무결성 : "기본키에 NOT NULL일 수 없고, 중복 될 수 없다" 규칙
+--참조 무결성 : "참조하는 테이블의 PK만 FK컬럼에 들어 갈 수 있다" 규칙
+--도메인 무결성 : "CHECK, UNIQUE제약안에서만 데이터가 들어갈 수 있다" 규칙
+
