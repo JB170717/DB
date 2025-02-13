@@ -50,15 +50,16 @@ DELETE FROM EMPS WHERE JOB_ID = (SELECT JOB_ID FROM EMPLOYEES WHERE EMPLOYEE_ID 
 --모든 데이터가 전부 지워질 수 있는 것은 아님
 SELECT * FROM DEPARTMENTS;
 SELECT * FROM EMPLOYEES;
+
 --50번 부서는 EMPLOYEES테이블에서 참조되고 있기 때문에 삭제가 일어나면 참조무결성 제약을 위배됩니다. 삭제가 안됩니다.
- 
+
 DELETE FROM DEPARTMENTS WHERE DEPARTMENT_ID=50; 
 
 -----------------------------------------------------------------------------------------
 -- MERGE문 : 데이터가 있으면 UPDATE, 없으면 INSERT를 문장을 수행하는 병합구문
 SELECT * FROM EMPS;
 
-MERGE INTO EMPS E1 --MERGE를 시킬 타겟테이블
+MERGE INTO EMPS E1 -- MERGE를 시킬 타겟테이블
 USING (SELECT * FROM EMPLOYEES WHERE JOB_ID LIKE '%MAN') E2  -- 병합할 테이블(서브쿼리)
 ON (E1.EMPLOYEE_ID=E2.EMPLOYEE_ID)  -- E1,E2 데이터가 연결되는 조건 (보통 KEY로 한다)
 WHEN MATCHED THEN --일치할 때 수행할 작업

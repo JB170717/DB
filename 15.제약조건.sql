@@ -45,4 +45,91 @@ VALUES(2, 'JONG', '010....','F',1700); -- 유니크 제약 위배
 --개체 무결성 : "기본키에 NOT NULL일 수 없고, 중복 될 수 없다" 규칙
 --참조 무결성 : "참조하는 테이블의 PK만 FK컬럼에 들어 갈 수 있다" 규칙
 --도메인 무결성 : "CHECK, UNIQUE제약안에서만 데이터가 들어갈 수 있다" 규칙
+--------------------------------------------------------------------------------
+--2ND - 테이블 레벨 제약조건
+DROP TABLE DEPTS;
+DROP TABLE DEPT;
+CREATE TABLE DEPTS(
+    DEPT_NO NUMBER(2),
+    DEPT_NAME VARCHAR(30) NOT NULL,
+    DEPT_DATE DATE        DEFAULT SYSDATE     ,
+    DEPT_PHONE  VARCHAR(30),
+    DEPT_GENDER CHAR(1),
+    LOCA_ID NUMBER(4),
+    CONSTRAINT DEPTS_DEPT_NO_PN PRIMARY KEY (DEPT_NO), --/*DEPT_NAME* 슈퍼키지정/), --슈퍼키 지정은 테이블레벨로 가능함
+    CONSTRAINT DEPTS_PHONE_UK UNIQUE (DEPT_PHONE),
+    CONSTRAINT DEPT_GENDER_CK CHECK(DEPT_GENDER IN ('M', 'F')),
+    CONSTRAINT DEPT_LOCA_ID_FK FOREIGN KEY(LOCA_ID) REFERENCES LOCATIONS(LOCATION_ID)
+);
+--3ND
+CREATE TABLE DEPTS(
+    DEPT_NO NUMBER(2),
+    DEPT_NAME VARCHAR(30) ,
+    DEPT_DATE DATE        DEFAULT SYSDATE  ,
+    DEPT_PHONE  VARCHAR(30),
+    DEPT_GENDER CHAR(1),
+    LOCA_ID NUMBER(4)
+);
+ALTER TABLE DEPTS ADD CONSTRAINT DEPT_NO_PK PRIMARY KEY (DEPT_NO); --PK추가
+--NOT NULL은 MODIFY구문으로 열 변경으로 추가함
+ALTER TABLE DEPTS MODIFY DEPT_NAME VARCHAR2(30) NOT NULL; --NOT NULL은 MODIFY구문으로 열 변경으로 추가함
+ALTER TABLE DEPTS ADD CONSTRAINT DEPT_PHONE_UK UNIQUE (DEPT_PHONE); --UK추가
+ALTER TABLE DEPTS ADD CONSTRAINT DEPT_GENDER_CK CHECK( DEPT_GENDER IN('F','M') );
+ALTER TABLE DEPTS ADD CONSTRAINT DEPT_LOCA_ID_FK FOREIGN KEY (LOCA_ID) REFERENCES LOCATIONS(LOCATION_ID);
+
+--제약조건의 삭제
+ALTER TABLE DEPTS DROP PRIMARY KEY; --이렇게 지울수 있음
+ALTER TABLE DEPTS DROP CONSTRAINT DEPT_LOCA_ID_FK; --이름으로도 지울수 있음
+--테이블의 제약조건을 SQL문으로 확인
+SELECT * FROM USER_CONSTRAINTS WHERE TABLE_NAME='DEPTS';
+
+---------------------------------------------------------------------
+--
+--문제1.
+--
+--다음과 같은 테이블을 생성하고 데이터를 insert해보세요.
+--테이블 제약조건은 아래와 같습니다. 
+--조건) M_NAME 는 가변문자형 20byte, 널값을 허용하지 않음
+--조건) M_NUM 은 숫자형 5자리, PRIMARY KEY 이름(mem_memnum_pk) 
+--조건) REG_DATE 는 날짜형, 널값을 허용하지 않음, UNIQUE KEY 이름:(mem_regdate_uk)
+--조건) SALARY 숫자형 10자리, CHECK제약 (0 보다 크다)
+--조건) LOCA 숫자형 4자리, FOREIGN KEY – 참조 locations테이블(location_id) 이름:(mem_loca_loc_locid_fk)
+
+--삭제됨.. 해볼것
+
+--문제2.
+--도서테이블, 도서 대여 이력 테이블을 생성하려 합니다.
+--도서 테이블은
+--도서번호(문자) PK, 도서명(문자), 출판사(문자), 입고일(날짜)
+--도서 대여 이력 테이블은
+--대여번호(숫자) PK, 도서번호(문자) FK, 대여일(날짜), 반납일(날짜), 반납여부(Y/N)
+--를 가집니다.
+--적절한 테이블을 생성해 보세요.
+
+CREATE TABLE BOOK (
+    BOOK_NUM VARCHAR2(30) CONSTRAINT BOOK_NUM PRIMARY KEY,
+    BOOK_NAME VARCHAR2(30),
+    PUBLICSHER VARCHAR2(30),
+    STORE_DATE DATE
+);
+CREATE TABLE BOOK_HISTORY (
+    HISTROY_NUM VARCHAR2(30),
+    BOOK_NUM VARCHAR2(30),
+    START_DATE DATE,
+    END_DATE DATE,
+    RETURN_YN VARCHAR2(1),
+    CONSTRAINT HISTROY_NUM_PK PRIMARY KEY(HISTROY_NUM),
+    CONSTRAINT HISTROY_BOOK_NUM_FK FOREIGN KEY (BOOK_NUM) REFERENCES BOOK(BOOK_NUM),
+    CONSTRAINT HISTROY_RETURN_CK CHECK(RETURN_YN IN ('Y','N'))
+);
+
+
+
+
+
+
+
+
+
+
 
